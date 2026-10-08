@@ -1,20 +1,53 @@
-// Version 1: solo DOM
+// Version 2: con eventos
 
+const formularioTarea = document.querySelector("#formularioTarea");
+const entradaTarea = document.querySelector("#entradaTarea");
 const listaTareas = document.querySelector("#listaTareas");
 const mensaje = document.querySelector("#mensaje");
 
-const tarea1 = document.createElement("li");
-tarea1.textContent = "Estudiar JavaScript";
+let cantidadTareas = 0;
 
-const tarea2 = document.createElement("li");
-tarea2.textContent = "Practicar DOM";
+entradaTarea.addEventListener("input", () => {
+    if (entradaTarea.value.trim() === "") {
+        mensaje.textContent = "Escribe una tarea";
+    } else {
+        mensaje.textContent = "Tarea lista para agregar";
+    }
+});
 
-const tarea3 = document.createElement("li");
-tarea3.textContent = "Realizar la tarea";
+formularioTarea.addEventListener("submit", (evento) => {
+    evento.preventDefault();
 
-listaTareas.appendChild(tarea1);
-listaTareas.appendChild(tarea2);
-listaTareas.appendChild(tarea3);
+    if (entradaTarea.value.trim() === "") {
+        mensaje.textContent = "La tarea no puede estar vacía";
+        return;
+    }
 
-mensaje.textContent = "Tareas pendientes: 3";
+    const li = document.createElement("li");
+    li.textContent = entradaTarea.value;
 
+    const botonCompletar = document.createElement("button");
+    botonCompletar.textContent = "Completar";
+
+    const botonBorrar = document.createElement("button");
+    botonBorrar.textContent = "Borrar";
+
+    botonCompletar.addEventListener("click", () => {
+        li.style.textDecoration = "line-through";
+    });
+
+    botonBorrar.addEventListener("click", () => {
+        li.remove();
+        cantidadTareas = cantidadTareas - 1;
+        mensaje.textContent = "Tareas pendientes: " + cantidadTareas;
+    });
+
+    li.appendChild(botonCompletar);
+    li.appendChild(botonBorrar);
+    listaTareas.appendChild(li);
+
+    cantidadTareas = cantidadTareas + 1;
+    mensaje.textContent = "Tareas pendientes: " + cantidadTareas;
+
+    entradaTarea.value = "";
+});
