@@ -1,11 +1,26 @@
-// Version 2: con eventos
+// Version 3: con clases y objetos
+
+class Tarea {
+    constructor(texto) {
+        this.texto = texto;
+        this.completada = false;
+    }
+
+    completar() {
+        this.completada = true;
+    }
+
+    estaPendiente() {
+        return !this.completada;
+    }
+}
 
 const formularioTarea = document.querySelector("#formularioTarea");
 const entradaTarea = document.querySelector("#entradaTarea");
 const listaTareas = document.querySelector("#listaTareas");
 const mensaje = document.querySelector("#mensaje");
 
-let cantidadTareas = 0;
+let tareas = [];
 
 entradaTarea.addEventListener("input", () => {
     if (entradaTarea.value.trim() === "") {
@@ -23,8 +38,11 @@ formularioTarea.addEventListener("submit", (evento) => {
         return;
     }
 
+    const tarea = new Tarea(entradaTarea.value);
+    tareas.push(tarea);
+
     const li = document.createElement("li");
-    li.textContent = entradaTarea.value;
+    li.textContent = tarea.texto + " ";
 
     const botonCompletar = document.createElement("button");
     botonCompletar.textContent = "Completar";
@@ -33,21 +51,36 @@ formularioTarea.addEventListener("submit", (evento) => {
     botonBorrar.textContent = "Borrar";
 
     botonCompletar.addEventListener("click", () => {
-        li.style.textDecoration = "line-through";
+        tarea.completar();
+
+        if (!tarea.estaPendiente()) {
+            li.style.textDecoration = "line-through";
+            mensaje.textContent = "Tarea completada";
+        }
     });
 
     botonBorrar.addEventListener("click", () => {
+        const posicion = tareas.indexOf(tarea);
+
+        if (posicion !== -1) {
+            tareas.splice(posicion, 1);
+        }
+
         li.remove();
-        cantidadTareas = cantidadTareas - 1;
-        mensaje.textContent = "Tareas pendientes: " + cantidadTareas;
+
+        mensaje.textContent =
+            "Tareas pendientes: " +
+            tareas.filter((t) => t.estaPendiente()).length;
     });
 
     li.appendChild(botonCompletar);
     li.appendChild(botonBorrar);
+
     listaTareas.appendChild(li);
 
-    cantidadTareas = cantidadTareas + 1;
-    mensaje.textContent = "Tareas pendientes: " + cantidadTareas;
+    mensaje.textContent =
+        "Tareas pendientes: " +
+        tareas.filter((t) => t.estaPendiente()).length;
 
     entradaTarea.value = "";
 });
